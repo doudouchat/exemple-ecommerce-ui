@@ -1,0 +1,23 @@
+<p-growl [(value)]="msgs" [immutable]="false"></p-growl>
+<div class="col-header"></div>
+
+<div class="row">
+
+	<div class="col-menu-desktop">
+		<p-menu [model]="items"></p-menu>
+	</div>
+
+	<div class="col-menu-mobile">
+		<p-menu #menu popup="popup" [model]="items"></p-menu>
+		<button type="button" pButton icon="fa fa-bars"
+			(click)="menu.toggle($event)"></button>
+	</div>
+
+	<div class="col-main">
+		<router-outlet></router-outlet>
+	</div>
+
+</div>
+<div class="col-footer">
+	<h6 style="text-align: center; margin: 0px;">version:{{(config | async)?.version}}</h6>
+</div>

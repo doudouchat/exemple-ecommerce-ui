@@ -1,0 +1,55 @@
+[class*="col-"] {
+	float: left;
+}
+
+.col-menu-mobile {
+	display: none;
+}
+
+.col-menu-desktop {
+	position: absolute;
+	width: 12.5em;
+	height: 95%;
+}
+
+.col-main {
+	position: absolute;
+	left: 14.5em;
+	right: 1em;
+	height: 95%;
+}
+
+.col-footer {
+	position: absolute;
+	bottom: 0em;
+	left: 0em;
+	height: 2%;
+	position: absolute;
+	width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+	/* For mobile phones: */
+	[class*="col-"] {
+		width: 100%;
+	}
+	.col-menu-mobile {
+		display: block;
+		padding: 10px;
+		height: 5%;
+	}
+	.col-menu-desktop {
+		display: none;
+	}
+	.col-main {
+		left: 0em;
+		margin-left: 1px;
+		margin-right: 1px;
+		height: 93%;
+		position: relative;
+	}
+	.col-footer {
+		position: relative;
+		height: 2%;
+	}
+}
