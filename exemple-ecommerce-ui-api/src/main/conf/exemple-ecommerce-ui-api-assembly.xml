@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>exemple-ecommerce-ui-api</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<unpack>true</unpack>
+			<scope>runtime</scope>
+			<excludes>
+				<exclude>exemple:exemple-ecommerce-api</exclude>
+				<exclude>exemple:exemple-ecommerce-authorization</exclude>
+			</excludes>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>/webapp</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+			<scope>runtime</scope>
+			<includes>
+				<include>exemple:exemple-ecommerce-api</include>
+				<include>exemple:exemple-ecommerce-authorization</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
+</assembly>

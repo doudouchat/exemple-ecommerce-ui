@@ -12,6 +12,7 @@
 
 	<modules>
 		<module>exemple-ecommerce-ui-front</module>
+		<module>exemple-ecommerce-ui-api</module>
 	</modules>
 
 	<properties>

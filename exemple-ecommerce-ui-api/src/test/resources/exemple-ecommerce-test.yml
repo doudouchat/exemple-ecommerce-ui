@@ -1,0 +1,38 @@
+resource:
+   cassandra:
+      addresses: 127.0.0.1
+      port: ${cassandra.nativeTransportPort}
+   hazelcast:
+      port: ${hazelcast.port}
+      member: 127.0.0.1:${hazelcast.port}
+authorization:
+   port: ${authorization.port}
+   dir: ${project.build.directory}/jetty
+   hazelcast:
+      port: ${hazelcast.port}
+      member: 127.0.0.1:${hazelcast.port}
+   zookeeper:
+      host: 127.0.0.1:${zmp.clientPort}
+   certificat:
+      location: file:${project.basedir}/src/main/conf/mytest.jks
+      alias: mytest
+      password: mypass
+   kafka:
+      bootstrap-servers: localhost:${kafka.port}
+store:
+   zookeeper:
+      host: 127.0.0.1:${zmp.clientPort}
+application:
+   zookeeper:
+      host: 127.0.0.1:${zmp.clientPort}
+api:
+   port: ${api.port}
+   dir: ${project.build.directory}/jetty
+   authorization:
+      path: http://localhost:${authorization.port}/ExempleAuthorization
+      hazelcast:
+         addresses: 127.0.0.1:${hazelcast.port}
+zookeeper:
+   port: ${zmp.clientPort}
+cassandra:
+   port: ${cassandra.nativeTransportPort}
