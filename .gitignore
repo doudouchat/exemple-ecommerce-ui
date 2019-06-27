@@ -4,6 +4,7 @@
 .tern-project
 target
 dist
+coverage
 node_modules/
 .tscache/
 node/

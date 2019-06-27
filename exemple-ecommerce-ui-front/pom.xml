@@ -8,14 +8,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>exemple-ecommerce-ui-front</artifactId>
-	
+
 	<properties>
 
-		<ts.dest>${project.build.directory}/build</ts.dest>
-		<webpack.config>config/webpack.prod.js</webpack.config>
-		<skip.webpack>false</skip.webpack>
 		<skip.yarn>false</skip.yarn>
-		<skip.npm>true</skip.npm>
 
 	</properties>
 
@@ -43,6 +39,21 @@
 		</pluginManagement>
 
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>dist</directory>
+						</fileset>
+						<fileset>
+							<directory>coverage</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
 
 			<!-- ANGULAR -->
 			<plugin>
@@ -75,35 +86,23 @@
 						<phase>generate-resources</phase>
 					</execution>
 					<execution>
-						<id>npm install</id>
+						<id>build</id>
 						<goals>
 							<goal>npm</goal>
 						</goals>
-						<phase>generate-resources</phase>
+						<phase>compile</phase>
 						<configuration>
-							<skip>${skip.npm}</skip>
-							<arguments>install --loglevel info</arguments>
+							<arguments>run-script build</arguments>
 						</configuration>
 					</execution>
 					<execution>
-						<id>webpack build</id>
+						<id>tests</id>
 						<goals>
-							<goal>webpack</goal>
-						</goals>
-						<phase>prepare-package</phase>
-						<configuration>
-							<skip>${skip.webpack}</skip>
-							<arguments>--config ${webpack.config} --output-path ${ts.dest}</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>javascript tests</id>
-						<goals>
-							<goal>karma</goal>
+							<goal>npm</goal>
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<karmaConfPath>karma.conf.js</karmaConfPath>
+							<arguments>run-script test</arguments>
 						</configuration>
 					</execution>
 				</executions>
@@ -112,5 +111,5 @@
 		</plugins>
 
 	</build>
-	
+
 </project>
