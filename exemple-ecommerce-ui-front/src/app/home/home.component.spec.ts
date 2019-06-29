@@ -32,15 +32,15 @@ describe('test', () => {
 
   });
 
-  it('home success', async(inject(
+  it("home should have as title 'exemple-ecommerce-ui'", async(inject(
     [MockBackend], (mockBackend) => {
 
       fixture.detectChanges();
 
       let de: DebugElement[];
-      de = fixture.debugElement.queryAll(By.css("p"));
+      de = fixture.debugElement.queryAll(By.css("h1"));
 
-      expect(de[0].nativeElement.innerHTML).to.equal("Welcome to exemple-ecommerce-ui!");
+      expect(de[0].nativeElement.innerHTML).to.equal(" Welcome to exemple-ecommerce-ui! ");
 
     })));
 
