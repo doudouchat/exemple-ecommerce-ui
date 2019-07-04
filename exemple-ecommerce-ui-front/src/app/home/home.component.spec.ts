@@ -1,7 +1,6 @@
 import { DebugElement } from '@angular/core';
-import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
-import { Response, ResponseOptions } from '@angular/http';
-import { MockBackend, MockConnection } from '@angular/http/testing';
+import { async, TestBed, ComponentFixture } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { expect } from 'chai';
 
@@ -17,8 +16,7 @@ describe('test', () => {
 
     fixture = TestBed.configureTestingModule({
 
-      imports: [HomeModule],
-      providers: [MockBackend]
+      imports: [HttpClientTestingModule, HomeModule]
 
     }).createComponent(HomeComponent);
 
@@ -32,16 +30,15 @@ describe('test', () => {
 
   });
 
-  it("home should have as title 'exemple-ecommerce-ui'", async(inject(
-    [MockBackend], (mockBackend) => {
+  it('home should have as title "exemple-ecommerce-ui"', async(() => {
 
-      fixture.detectChanges();
+    fixture.detectChanges();
 
-      let de: DebugElement[];
-      de = fixture.debugElement.queryAll(By.css("h1"));
+    let de: DebugElement[];
+    de = fixture.debugElement.queryAll(By.css('h1'));
 
-      expect(de[0].nativeElement.innerHTML).to.equal(" Welcome to exemple-ecommerce-ui! ");
+    expect(de[0].nativeElement.innerHTML).to.equal(' Welcome to exemple-ecommerce-ui! ');
 
-    })));
+  }));
 
 });
