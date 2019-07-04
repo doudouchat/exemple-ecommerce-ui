@@ -4,10 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>exemple</groupId>
-		<artifactId>exemple-ecommerce</artifactId>
+		<artifactId>exemple-ecommerce-ui</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>exemple-ecommerce-ui-api</groupId>
 	<artifactId>exemple-ecommerce-ui-api</artifactId>
 
 	<properties>
@@ -139,8 +138,6 @@
 
 	<build>
 
-		<finalName>exemple-ecommerce-ui-api-exec</finalName>
-
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
@@ -162,7 +159,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<appendAssemblyId>false</appendAssemblyId>
 					<descriptors>
 						<descriptor>src/main/conf/exemple-ecommerce-ui-api-assembly.xml</descriptor>
 					</descriptors>

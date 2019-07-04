@@ -1,6 +1,5 @@
 import { Component, DebugElement } from '@angular/core';
-import { async, inject, TestBed, ComponentFixture } from '@angular/core/testing';
-import { MockBackend } from '@angular/http/testing';
+import { async, TestBed, ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { expect } from 'chai';
@@ -17,7 +16,6 @@ describe('AppComponent', () => {
 
     let fixture: ComponentFixture<AppComponent>;
     let mock: ComponentFixture<DummyComponent>;
-    let component: AppComponent;
 
     beforeEach(async(() => {
 
@@ -25,13 +23,11 @@ describe('AppComponent', () => {
 
             imports: [AppModule, RouterTestingModule.withRoutes(
                 [{ path: '', component: DummyComponent }])],
-            declarations: [DummyComponent],
-            providers: [MockBackend]
+            declarations: [DummyComponent]
 
         }).createComponent(AppComponent);
 
-        mock = TestBed.createComponent(DummyComponent)
-        component = fixture.componentInstance;
+        mock = TestBed.createComponent(DummyComponent);
 
     }));
 
@@ -41,23 +37,22 @@ describe('AppComponent', () => {
 
     });
 
-    it("routing should have as template dummy", async(inject(
-        [MockBackend], (mockBackend) => {
+    it('routing should have as template dummy', async(() => {
 
-            fixture.detectChanges();
+        fixture.detectChanges();
+
+        mock.detectChanges();
+
+        mock.whenStable().then(() => {
 
             mock.detectChanges();
+            let de: DebugElement[];
+            de = mock.debugElement.queryAll(By.css('h6'));
 
-            mock.whenStable().then(() => {
+            expect(de[0].nativeElement.innerHTML).to.equal('dummy');
 
-                mock.detectChanges();
-                let de: DebugElement[];
-                de = mock.debugElement.queryAll(By.css("h6"));
+        });
 
-                expect(de[0].nativeElement.innerHTML).to.equal('dummy');
-
-            })
-
-        })));
+    }));
 
 });
