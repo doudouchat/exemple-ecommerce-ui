@@ -1,10 +1,19 @@
 package com.exemple.ecommerce.ui.api;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.nodes.PersistentNode;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.test.TestingServer;
+import org.apache.zookeeper.CreateMode;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
@@ -12,20 +21,58 @@ import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.mindrot.jbcrypt.BCrypt;
 import org.yaml.snakeyaml.Yaml;
 
-import info.archinnov.achilles.embedded.CassandraEmbeddedServerBuilder;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ApiJettyExecutable {
+import info.archinnov.achilles.embedded.CassandraEmbeddedServerBuilder;
+import info.archinnov.achilles.embedded.CassandraShutDownHook;
+
+public final class ApiJettyExecutable {
+
+    private static final String API_APP = "api";
+
+    private static final String AUTHORIZATION_APP = "authorization";
+
+    private static final String GATEWAY_APP = "gateway";
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private ApiJettyExecutable() {
+
+    }
 
     private static TestingServer embeddedZookeeper(int port) throws Exception {
 
         return new TestingServer(port, true);
+
+    }
+
+    private static CuratorFramework createClientZookeeper(TestingServer embeddedZookeeper) {
+
+        CuratorFramework clientZookeeper = CuratorFrameworkFactory.newClient(embeddedZookeeper.getConnectString(), new RetryNTimes(1, 1_000));
+        clientZookeeper.start();
+
+        return clientZookeeper;
+
+    }
+
+    private static PersistentNode createClientDetails(CuratorFramework client, String clientId, Map<String, Object> clientDetails) {
+
+        PersistentNode node = new PersistentNode(client, CreateMode.PERSISTENT, false, "/" + clientId,
+                MAPPER.convertValue(clientDetails, JsonNode.class).toString().getBytes(StandardCharsets.UTF_8));
+        node.start();
+
+        return node;
+
     }
 
     private static CassandraEmbeddedServerBuilder embeddedServer(int port) {
@@ -46,17 +93,31 @@ public class ApiJettyExecutable {
         // PROPERTIES
 
         Yaml yaml = new Yaml();
-        Map<String, Map<String, Object>> properties = yaml.load(new FileInputStream(resource));
+        Map<String, Map<String, Object>> properties = yaml.load(Files.newInputStream(Paths.get(resource.toURI())));
 
         System.setProperty("logback.configurationFile", System.getProperty("logging.config"));
 
         // ZOOKEEPER
 
-        embeddedZookeeper((int) properties.get("zookeeper").get("port"));
+        TestingServer embeddedZookeeper = embeddedZookeeper((int) properties.get("zookeeper").get("port"));
+
+        final CuratorFramework clientZookeeper = createClientZookeeper(embeddedZookeeper);
+
+        final CuratorFramework clientAuthorizationZookeeper = clientZookeeper.usingNamespace(AUTHORIZATION_APP);
+
+        // CREATE CLIENT RESOURCE
+
+        String password = "{bcrypt}" + BCrypt.hashpw("secret", BCrypt.gensalt());
+        Map<String, Object> clientDetails = new HashMap<>();
+        clientDetails.put("client_id", "resource");
+        clientDetails.put("client_secret", password);
+        clientDetails.put("authorized_grant_types", Collections.singletonList("client_credentials"));
+        clientDetails.put("authorities", Collections.singletonList("ROLE_TRUSTED_CLIENT"));
+        createClientDetails(clientAuthorizationZookeeper, "resource", clientDetails);
 
         // CASSANDRA
-
-        embeddedServer((int) properties.get("cassandra").get("port")).buildServer();
+        CassandraShutDownHook cassandraShutDownHook = new CassandraShutDownHook();
+        embeddedServer((int) properties.get("cassandra").get("port")).withShutdownHook(cassandraShutDownHook).buildServer();
 
         // SERVER
 
@@ -67,24 +128,30 @@ public class ApiJettyExecutable {
         jndiConfiguration.addBefore(JettyWebXmlConfiguration.class.getName(), AnnotationConfiguration.class.getName());
 
         ServerConnector connectorAuthorization = new ServerConnector(server);
-        connectorAuthorization.setPort((int) properties.get("authorization").get("port"));
-        connectorAuthorization.setName("authorization");
+        connectorAuthorization.setPort((int) properties.get(AUTHORIZATION_APP).get("port"));
+        connectorAuthorization.setName(AUTHORIZATION_APP);
 
         ServerConnector connectorApi = new ServerConnector(server);
-        connectorApi.setPort((int) properties.get("api").get("port"));
-        connectorApi.setName("api");
+        connectorApi.setPort((int) properties.get(API_APP).get("port"));
+        connectorApi.setName(API_APP);
+
+        ServerConnector connectorGateway = new ServerConnector(server);
+        connectorGateway.setPort((int) properties.get(GATEWAY_APP).get("port"));
+        connectorGateway.setName(GATEWAY_APP);
 
         server.addConnector(connectorAuthorization);
         server.addConnector(connectorApi);
+        server.addConnector(connectorGateway);
 
         HandlerCollection contexts = new HandlerCollection();
+        contexts.addHandler(new ShutdownHandler("secret", true, true));
         server.setHandler(contexts);
 
         System.setProperty("spring.profiles.active", "etude,noEvent");
 
         // AUTHORIZATION
 
-        File authorizationDir = new File((String) properties.get("authorization").get("dir"));
+        File authorizationDir = new File((String) properties.get(AUTHORIZATION_APP).get("dir"));
 
         try (Resource authorizationResource = Resource.newClassPathResource("webapp/exemple-ecommerce-authorization.war")) {
             authorizationResource.copyTo(authorizationDir);
@@ -101,7 +168,7 @@ public class ApiJettyExecutable {
 
         // API
 
-        File apiDir = new File((String) properties.get("api").get("dir"));
+        File apiDir = new File((String) properties.get(API_APP).get("dir"));
 
         try (Resource apiResource = Resource.newClassPathResource("webapp/exemple-ecommerce-api.war")) {
             apiResource.copyTo(apiDir);
@@ -118,8 +185,28 @@ public class ApiJettyExecutable {
 
         contexts.addHandler(appApi);
 
+        // GATEWAY
+
+        File gatewayDir = new File((String) properties.get(GATEWAY_APP).get("dir"));
+
+        try (Resource gatewayResource = Resource.newClassPathResource("webapp/exemple-ecommerce-ui-gateway.war")) {
+            gatewayResource.copyTo(gatewayDir);
+        }
+
+        WebAppContext gateway = new WebAppContext();
+        gateway.setContextPath("/");
+        gateway.setWar(new File(gatewayDir, "webapp/exemple-ecommerce-ui-gateway.war").getAbsolutePath());
+        gateway.setVirtualHosts(new String[] { "@gateway" });
+
+        new EnvEntry(gateway, "exemple-ecommerce-gateway-configuration", resource.getAbsolutePath(), true);
+        new EnvEntry(gateway, "spring.config.location", resource.getAbsolutePath(), true);
+
+        contexts.addHandler(gateway);
+
         server.start();
         server.join();
+
+        cassandraShutDownHook.shutDownNow();
 
     }
 }

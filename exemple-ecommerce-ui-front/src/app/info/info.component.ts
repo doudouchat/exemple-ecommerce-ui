@@ -14,7 +14,7 @@ export class InfoComponent implements OnInit {
 
     info: Observable<any | Info>;
 
-    constructor(private infoService: InfoService) { }
+    constructor(private readonly infoService: InfoService) { }
 
     ngOnInit() {
 

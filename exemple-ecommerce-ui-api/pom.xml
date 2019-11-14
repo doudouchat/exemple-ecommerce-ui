@@ -11,12 +11,10 @@
 
 	<properties>
 
-		<jetty-version>9.4.18.v20190429</jetty-version>
+		<jetty-version>9.4.22.v20191022</jetty-version>
 
 		<!-- PORT -->
 
-		<api.port>8080</api.port>
-		<authorization.port>8084</authorization.port>
 		<cassandra.nativeTransportPort>9042</cassandra.nativeTransportPort>
 		<hazelcast.port>5705</hazelcast.port>
 		<zmp.clientPort>10024</zmp.clientPort>
@@ -112,8 +110,27 @@
 
 		<dependency>
 			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.curator</groupId>
 			<artifactId>curator-test</artifactId>
 			<scope>compile</scope>
+		</dependency>
+
+		<!-- BCRYPT -->
+
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+		</dependency>
+
+		<!-- FASTER JACKSON -->
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
 		<!-- API -->
@@ -131,6 +148,15 @@
 			<groupId>exemple</groupId>
 			<artifactId>exemple-ecommerce-authorization</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
+
+		<!-- GATEWAY -->
+
+		<dependency>
+			<groupId>exemple</groupId>
+			<artifactId>exemple-ecommerce-ui-gateway</artifactId>
+			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
 

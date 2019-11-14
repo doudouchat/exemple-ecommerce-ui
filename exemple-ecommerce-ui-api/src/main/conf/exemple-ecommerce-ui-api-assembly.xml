@@ -14,8 +14,7 @@
 			<unpack>true</unpack>
 			<scope>runtime</scope>
 			<excludes>
-				<exclude>exemple:exemple-ecommerce-api</exclude>
-				<exclude>exemple:exemple-ecommerce-authorization</exclude>
+				<exclude>*:war</exclude>
 			</excludes>
 		</dependencySet>
 		<dependencySet>
@@ -24,8 +23,7 @@
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<scope>runtime</scope>
 			<includes>
-				<include>exemple:exemple-ecommerce-api</include>
-				<include>exemple:exemple-ecommerce-authorization</include>
+				<include>*:war</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

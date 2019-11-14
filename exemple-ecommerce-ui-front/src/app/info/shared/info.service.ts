@@ -7,7 +7,7 @@ import { Info } from './info';
 @Injectable()
 export class InfoService {
 
-    constructor(private http: HttpClient) { }
+    constructor(private readonly http: HttpClient) { }
 
     info(): Observable<Info> {
 
