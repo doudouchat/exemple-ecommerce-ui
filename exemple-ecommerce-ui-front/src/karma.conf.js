@@ -21,7 +21,7 @@ module.exports = function (config) {
     },
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, '../coverage/exemple-ecommerce-ui'),
-      reports : [ 'html', 'text-summary', 'cobertura' ],
+      reports : [ 'html', 'text-summary', 'cobertura', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
 		mochaReporter : {

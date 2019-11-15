@@ -16,6 +16,7 @@
 	<modules>
 		<module>exemple-ecommerce-ui-front</module>
 		<module>exemple-ecommerce-ui-api</module>
+		<module>exemple-ecommerce-ui-gateway</module>
 	</modules>
 
 	<properties>
@@ -24,6 +25,36 @@
 		<maven.compiler.sourcen>1.8</maven.compiler.sourcen>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
+		<!-- PORT -->
+
+		<api.port>8082</api.port>
+		<authorization.port>8084</authorization.port>
+		<gateway.port>8080</gateway.port>
+
 	</properties>
+
+	<dependencyManagement>
+
+		<dependencies>
+
+			<!-- MOCK SERVER -->
+
+			<dependency>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-netty</artifactId>
+				<version>5.7.0</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-client-java</artifactId>
+				<version>5.7.0</version>
+				<scope>test</scope>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
 
 </project>
