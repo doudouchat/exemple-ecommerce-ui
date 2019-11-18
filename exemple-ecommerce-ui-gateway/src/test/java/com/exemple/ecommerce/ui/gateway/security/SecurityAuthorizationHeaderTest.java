@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.mockserver.client.MockServerClient;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
@@ -23,21 +22,20 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.exemple.ecommerce.ui.gateway.common.LoggingFilter;
+import com.exemple.ecommerce.ui.gateway.core.GatewayServerTestConfiguration;
 import com.exemple.ecommerce.ui.gateway.core.GatewayTestConfiguration;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-@SpringBootTest(classes = GatewayTestConfiguration.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { GatewayTestConfiguration.class, GatewayServerTestConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SecurityAuthorizationHeaderTest extends AbstractTestNGSpringContextTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityAuthorizationHeaderTest.class);
@@ -50,8 +48,7 @@ public class SecurityAuthorizationHeaderTest extends AbstractTestNGSpringContext
 
     private RequestSpecification requestSpecification;
 
-    private ClientAndServer apiServer;
-
+    @Autowired
     private MockServerClient apiClient;
 
     private static final Algorithm HMAC256_ALGORITHM;
@@ -59,23 +56,6 @@ public class SecurityAuthorizationHeaderTest extends AbstractTestNGSpringContext
     static {
 
         HMAC256_ALGORITHM = Algorithm.HMAC256("abc");
-
-    }
-
-    @BeforeClass
-    private void init() {
-
-        System.setProperty("mockserver.logLevel", "WARN");
-
-        apiServer = ClientAndServer.startClientAndServer(apiPort);
-        apiClient = new MockServerClient("localhost", apiPort);
-
-    }
-
-    @AfterClass
-    private void stop() {
-
-        apiServer.stop();
 
     }
 

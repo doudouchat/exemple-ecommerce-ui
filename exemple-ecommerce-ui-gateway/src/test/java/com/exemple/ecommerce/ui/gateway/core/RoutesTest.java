@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import java.util.Collections;
 
 import org.mockserver.client.MockServerClient;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
@@ -20,8 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -31,7 +28,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-@SpringBootTest(classes = GatewayTestConfiguration.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { GatewayTestConfiguration.class, GatewayServerTestConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RoutesTest extends AbstractTestNGSpringContextTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoutesTest.class);
@@ -47,32 +44,11 @@ public class RoutesTest extends AbstractTestNGSpringContextTests {
 
     private RequestSpecification requestSpecification;
 
-    private ClientAndServer apiServer;
-    private ClientAndServer authorizationServer;
-
+    @Autowired
     private MockServerClient apiClient;
+
+    @Autowired
     private MockServerClient authorizationClient;
-
-    @BeforeClass
-    private void init() {
-
-        System.setProperty("mockserver.logLevel", "WARN");
-
-        apiServer = ClientAndServer.startClientAndServer(apiPort);
-        authorizationServer = ClientAndServer.startClientAndServer(authorizationPort);
-
-        apiClient = new MockServerClient("localhost", apiPort);
-        authorizationClient = new MockServerClient("localhost", authorizationPort);
-
-    }
-
-    @AfterClass
-    private void stop() {
-
-        apiServer.stop();
-        authorizationServer.stop();
-
-    }
 
     @BeforeMethod
     private void before() {
