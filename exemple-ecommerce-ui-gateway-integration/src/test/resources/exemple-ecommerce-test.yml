@@ -1,0 +1,19 @@
+gateway:
+   hazelcast:
+      port: ${hazelcast.port}
+security:
+   oauth2:
+      client:
+         clientId: resource
+         clientSecret: secret
+      resource:
+         jwt:
+            keyValue: abc
+zuul:
+   routes:
+      api:
+         path: /Test/**
+         sensitiveHeaders: null
+         url: ${application.host}:${application.port}/${application.contextpath}
+         stripPrefix: false
+         prefix: Test

@@ -17,6 +17,7 @@
 		<module>exemple-ecommerce-ui-front</module>
 		<module>exemple-ecommerce-ui-api</module>
 		<module>exemple-ecommerce-ui-gateway</module>
+		<module>exemple-ecommerce-ui-gateway-integration</module>
 	</modules>
 
 	<properties>
