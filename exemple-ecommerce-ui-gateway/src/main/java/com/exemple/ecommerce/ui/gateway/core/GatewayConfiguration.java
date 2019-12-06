@@ -14,7 +14,7 @@ import com.exemple.ecommerce.ui.gateway.session.GatewaySessionConfiguration;
 @Configuration
 @EnableZuulProxy
 @Import({ GatewaySecurityConfiguration.class, GatewaySessionConfiguration.class })
-@ComponentScan(basePackages = "com.exemple.ecommerce.ui.gateway.location")
+@ComponentScan(basePackages = { "com.exemple.ecommerce.ui.gateway.location", "com.exemple.ecommerce.ui.gateway.routing" })
 public class GatewayConfiguration {
 
     @Bean

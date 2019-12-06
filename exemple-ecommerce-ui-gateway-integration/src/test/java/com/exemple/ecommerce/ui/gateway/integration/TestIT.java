@@ -41,7 +41,7 @@ public class TestIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
 
                 .body(body).post(URL);
 
@@ -54,9 +54,10 @@ public class TestIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
 
                 .head(URL + "/{id}", "123");
+
         assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT.value()));
 
     }
@@ -66,9 +67,10 @@ public class TestIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
 
                 .get(URL + "/{id}", "123");
+
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
     }
@@ -78,7 +80,7 @@ public class TestIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
 
                 .delete(URL + "/{id}", "123");
 
@@ -96,11 +98,24 @@ public class TestIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
 
                 .body(Collections.singletonList(patch)).patch(URL + "/{id}", "123");
 
         assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT.value()));
+
+    }
+
+    @Test
+    public void options() {
+
+        Response response = JsonRestTemplate.given()
+
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).queryParam("debug", "true")
+
+                .options(URL + "/{id}", "123");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
     }
 }

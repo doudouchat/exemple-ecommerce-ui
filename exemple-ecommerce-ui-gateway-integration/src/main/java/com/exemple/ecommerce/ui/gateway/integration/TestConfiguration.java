@@ -7,7 +7,9 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 @ApplicationPath("/ws")
 public class TestConfiguration extends ResourceConfig {
 

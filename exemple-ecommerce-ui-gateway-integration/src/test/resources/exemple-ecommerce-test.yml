@@ -9,11 +9,17 @@ security:
       resource:
          jwt:
             keyValue: abc
+api:
+   ribbon:
+      listOfServers: ${application.host}:${test.port}/${application.contextpath}
+      ConnectTimeout: 3000
+      ReadTimeout: 3000
 zuul:
    routes:
       api:
-         path: /Test/**
+         path: /${application.contextpath}/**
          sensitiveHeaders: null
-         url: ${application.host}:${application.port}/${application.contextpath}
          stripPrefix: false
-         prefix: Test
+   debug:
+      request: true
+   include-debug-header: true

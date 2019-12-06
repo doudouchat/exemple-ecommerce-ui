@@ -8,7 +8,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>exemple-ecommerce-ui-gateway-integration</artifactId>
-	<packaging>war</packaging>
 
 	<properties>
 
@@ -27,7 +26,28 @@
 		<!-- API -->
 		<hazelcast.port>5705</hazelcast.port>
 
+		<!-- SONAR -->
+		<sonar.coverage.exclusions>**/*.java</sonar.coverage.exclusions>
+
 	</properties>
+
+	<dependencyManagement>
+
+		<dependencies>
+
+			<!-- SPRING BOOT -->
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${org.springframework.boot-version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
 
 	<dependencies>
 
@@ -37,6 +57,28 @@
 			<groupId>exemple</groupId>
 			<artifactId>exemple-ecommerce-api-integration</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- SPRING BOOT -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>
 
 		<!-- JERSEY -->
@@ -59,6 +101,13 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
+		</dependency>
+
+		<!-- GROOVY -->
+
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
 		</dependency>
 
 		<!-- JWT TOKEN -->
@@ -112,12 +161,41 @@
 
 			<plugins>
 
+				<!-- SPRING BOOT -->
+				<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/index.html -->
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${org.springframework.boot-version}</version>
+					<configuration>
+						<jvmArguments>${jacoco.it.agent.argLine}
+							-Dlogging.config=file:${application.log.file}</jvmArguments>
+						<jmxPort>${test.jmx.port}</jmxPort>
+						<wait>3000</wait>
+						<fork>true</fork>
+					</configuration>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<!-- CARGO -->
 				<!-- https://codehaus-cargo.github.io/cargo/Maven2+plugin.html -->
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.7.7</version>
+					<version>1.7.9</version>
 					<configuration>
 						<container>
 							<containerId>${tomcat.container.id}</containerId>
@@ -186,12 +264,12 @@
 
 		<plugins>
 
-			<!-- WAR -->
+			<!-- VERSION -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<processDependencyManagement>false</processDependencyManagement>
 				</configuration>
 			</plugin>
 
@@ -241,6 +319,8 @@
 								<configuration>
 									<portNames>
 										<portName>application.port</portName>
+										<portName>test.port</portName>
+										<portName>test.jmx.port</portName>
 										<portName>cargo.rmi.port</portName>
 										<portName>cargo.ajp.port</portName>
 										<portName>hazelcast.port</portName>
@@ -248,6 +328,18 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+
+					<!-- SPRING BOOT -->
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<arguments>
+								<argument>--server.port=${test.port}</argument>
+								<argument>--server.servlet.context-path=/${application.contextpath}</argument>
+							</arguments>
+						</configuration>
 					</plugin>
 
 					<!-- CARGO -->
@@ -273,14 +365,6 @@
 										<context>/</context>
 									</properties>
 									<pingUrlPath>/actuator/health</pingUrlPath>
-								</deployable>
-								<deployable>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<type>war</type>
-									<properties>
-										<context>/${application.contextpath}</context>
-									</properties>
 								</deployable>
 							</deployables>
 							<configuration>
