@@ -3,3 +3,11 @@ security:
       resource:
          jwt:
             keyValue: abc
+api:
+   port: ${api.port}
+   ribbon:
+      listOfServers: http://localhost:${api.port}
+authorization:
+   port: ${authorization.port}
+   ribbon:
+      listOfServers: http://localhost:${authorization.port}

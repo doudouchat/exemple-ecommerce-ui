@@ -6,16 +6,8 @@ zuul:
       api:
          path: /ExempleEcommerce/**
          sensitiveHeaders: null
-         url: http://localhost:${api.port}
          stripPrefix: false
-         prefix: ExempleEcommerce
       authorization:
          path: /ExempleAuthorization/**
          sensitiveHeaders: null
-         url: http://localhost:${authorization.port}
          stripPrefix: false
-         prefix: ExempleAuthorization
-api:
-   port: ${api.port}
-authorization:
-   port: ${authorization.port}
