@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/doudouchat/exemple-ecommerce-ui.svg?branch=master)](https://travis-ci.org/doudouchat/exemple-ecommerce-ui) 
+
 # exemple-ecommerce-ui
 
 ## maven
